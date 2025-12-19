@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://c7voro17egnrk"]
+
+[ext_resource type="Shader" uid="uid://c60f7u4i6kfve" path="res://scenes/universe/planets/earth/materials/planet_preview.gdshader" id="1_e1yti"]
+[ext_resource type="Texture2D" uid="uid://cd6ayp7cqsux5" path="res://assets/textures/planets/teste conti_Mont.png" id="2_tfojl"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_e1yti")
+shader_parameter/planeta_textura = ExtResource("2_tfojl")

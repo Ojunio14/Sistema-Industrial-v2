@@ -1,3 +1,7 @@
-[gd_scene format=3 uid="uid://b31puysgglw57"]
+[gd_scene load_steps=2 format=3 uid="uid://b31puysgglw57"]
+
+[ext_resource type="PackedScene" uid="uid://cqkyy6vpyqs7l" path="res://scenes/universe/galaxy_map/galaxy_map.tscn" id="1_hyk8p"]
 
 [node name="Main" type="Node"]
+
+[node name="GalaxyMap" parent="." instance=ExtResource("1_hyk8p")]

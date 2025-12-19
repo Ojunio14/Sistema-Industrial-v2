@@ -12,6 +12,8 @@ signal ChangedCamera
 @export var minimum_orbit_distance: float = 2.0
 @export var maximum_orbit_distance: float = 10.0
 
+@export var radius : int = 0
+@export var raio_seguranca : int
 # Variáveis privadas
 var yaw: float
 var pitch: float
@@ -19,6 +21,10 @@ var pitch: float
 # Variável para armazenar o movimento do mouse entre as funções
 var _mouse_motion: Vector2 = Vector2.ZERO
 @export var my_id : String = "Gimbal_Orbital"
+
+
+@onready var teste: MeshInstance3D = $"../../teste"
+
 
 # Unity: void Start()
 func _ready() -> void:
@@ -78,15 +84,15 @@ func _process(delta: float) -> void:
 	#print(orbit_radius)
 	
 	
-	if orbit_radius <= 550:
-		var cast = RayCast()
-		#print(cast["collider"].get_parent())
-		if cast.has("collider"):
-			print(cast["collider"].get_parent())
-			emit_signal("ChangedCamera")
-			orbit_radius = 700
-		#print(cast)
-		print(orbit_radius)
+	#if orbit_radius <= 550:
+		#var cast = RayCast()
+		##print(cast["collider"].get_parent())
+		#if cast.has("collider"):
+			#print(cast["collider"].get_parent())
+			#emit_signal("ChangedCamera")
+			#orbit_radius = 700
+		##print(cast)
+		#print(orbit_radius)
 	
 	# Unity: transform.position = target.position - transform.forward * orbitRadius;
 	# O vetor "para frente" da Unity (-Z) é o oposto do de Godot (+Z).
@@ -102,30 +108,38 @@ const RAY_LENGTH = 1000
 
 func _physics_process(delta):
 	if Input.is_action_just_pressed("G"):
-		var meshIns : MeshInstance3D = MeshInstance3D.new()
-		var boxMesh : BoxMesh = BoxMesh.new()
-		boxMesh.size = Vector3(50,5,50)
+		#var meshIns : MeshInstance3D = MeshInstance3D.new()
+		#var boxMesh : BoxMesh = BoxMesh.new()
+		#boxMesh.size = Vector3(50,5,50)
 		#var capsuleMesh : CapsuleMesh = CapsuleMesh.new()
 		#capsuleMesh.radius = 3
 		#capsuleMesh.height = 16
-		meshIns.mesh = boxMesh#capsuleMesh
-		get_tree().get_first_node_in_group("Teste").add_child(meshIns)
+		#meshIns.mesh = boxMesh#capsuleMesh
+		#get_tree().get_first_node_in_group("Teste").add_child(meshIns)
 		
 		var result = RayCast()
 
 		if result.has("position"):
 			#print(result)
 			
-			var PosSphere = result["position"]
+			#var PosSphere = result["position"]
 			
-			var NormalSphere = result["normal"]
-			
-			
-			var rotFinal = Quaternion(Vector3.UP,NormalSphere)
+			#var NormalSphere = result["normal"]
 			
 			
-			meshIns.global_position = PosSphere
-			meshIns.quaternion = rotFinal
+			#var rotFinal = Quaternion(Vector3.UP,NormalSphere)
+			var pos : Vector3 = result["position"]
+			pos = pos.normalized()
+			var raio_seg = radius + raio_seguranca
+			print(result["position"],"global_position")
+			print(pos,"normalizar")
+			print(pos * raio_seg,"multiplicar")
+			
+			
+			
+			teste.global_position = result["position"]
+			#meshIns.global_position = PosSphere
+			#meshIns.quaternion = rotFinal
 
 
 func RayCast() -> Dictionary:

@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3 uid="uid://b8vgcafodkfu6"]
+
+[ext_resource type="PackedScene" uid="uid://baehs7yh20b45" path="res://scenes/universe/planets/earth/earth_pivot.tscn" id="1_0jov3"]
+[ext_resource type="PackedScene" uid="uid://ck22ovow7cbe6" path="res://scenes/cameras/gameplay/camera_orbital.tscn" id="2_7we4f"]
+[ext_resource type="PackedScene" uid="uid://ckhhkyswqw0bk" path="res://scenes/universe/planets/earth/earth.tscn" id="3_d52ay"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7we4f"]
+albedo_color = Color(1, 0.1764706, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_d52ay"]
+material = SubResource("StandardMaterial3D_7we4f")
+
+[node name="SolarSystemPivot" type="Node3D"]
+
+[node name="ScaledSpace" type="Node3D" parent="."]
+
+[node name="Earth_Pivot" parent="ScaledSpace" instance=ExtResource("1_0jov3")]
+
+[node name="Group_Cameras" type="Node3D" parent="ScaledSpace"]
+
+[node name="Camera_Orbital" parent="ScaledSpace/Group_Cameras" node_paths=PackedStringArray("target") instance=ExtResource("2_7we4f")]
+target = NodePath("../../Earth_Pivot")
+sensitivity = 0.5
+orbit_radius = 60.0
+minimum_orbit_distance = 60.0
+maximum_orbit_distance = 400.0
+radius = 50000
+raio_seguranca = 20
+
+[node name="teste" type="MeshInstance3D" parent="ScaledSpace"]
+mesh = SubResource("SphereMesh_d52ay")
+
+[node name="Local_Space" type="Node3D" parent="."]
+
+[node name="Earth" parent="Local_Space" instance=ExtResource("3_d52ay")]
