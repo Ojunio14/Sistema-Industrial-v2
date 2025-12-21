@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0xs72njgco5h"]
+
+[ext_resource type="Script" uid="uid://brfob8en7henu" path="res://scenes/cameras/scripts/camera_quadtree.gd" id="1_oo11n"]
+
+[node name="Camera_Quadtree" type="Camera3D"]
+cull_mask = 1048574
+script = ExtResource("1_oo11n")

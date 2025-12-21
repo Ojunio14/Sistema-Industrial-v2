@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://bds0p3y7ntc6n"]
+
+[ext_resource type="Script" uid="uid://b55gi8hb7yc1c" path="res://scenes/cameras/scripts/camera_rts.gd" id="1_dp3uf"]
+
+[node name="Camera_Rts" type="Node3D"]
+script = ExtResource("1_dp3uf")
+
+[node name="GimbalElevation" type="Node3D" parent="."]
+
+[node name="Camera" type="Camera3D" parent="GimbalElevation"]

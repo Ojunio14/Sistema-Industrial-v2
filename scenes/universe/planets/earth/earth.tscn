@@ -1,10 +1,17 @@
-[gd_scene load_steps=2 format=3 uid="uid://ckhhkyswqw0bk"]
+[gd_scene load_steps=4 format=3 uid="uid://ckhhkyswqw0bk"]
+
+[ext_resource type="Texture2D" uid="uid://cd6ayp7cqsux5" path="res://assets/textures/planets/teste conti_Mont.png" id="1_mkfqo"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_ocx6c"]
 radius = 400.0
 height = 800.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hvc3j"]
+albedo_texture = ExtResource("1_mkfqo")
+
 [node name="Earth" type="Node3D"]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+layers = 2
 mesh = SubResource("SphereMesh_ocx6c")
+surface_material_override/0 = SubResource("StandardMaterial3D_hvc3j")

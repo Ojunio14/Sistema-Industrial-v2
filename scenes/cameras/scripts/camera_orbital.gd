@@ -20,16 +20,20 @@ var pitch: float
 
 # Variável para armazenar o movimento do mouse entre as funções
 var _mouse_motion: Vector2 = Vector2.ZERO
-@export var my_id : String = "Gimbal_Orbital"
+@export var my_id : String = "Orbital"
 
+@onready var camera_quadtree: Camera3D = $"../../../Local_Space/Group_Cameras_Local/Camera_Quadtree"
 
-@onready var teste: MeshInstance3D = $"../../teste"
+@onready var teste_local: MeshInstance3D = $"../../../teste_local"
+@onready var teste_scaled: MeshInstance3D = $"../../../teste_Scaled"
+
+#@onready var teste_proces: MeshInstance3D = $"../../../teste_proces"
 
 
 # Unity: void Start()
 func _ready() -> void:
 	
-	#CameraManager.register_camera(my_id, $Camera)
+	CameraManager.register_camera(my_id, $Camera)
 	
 	# Unity: yaw = transform.eulerAngles.y;
 	yaw = self.rotation_degrees.y
@@ -55,6 +59,8 @@ func _input(event: InputEvent) -> void:
 # Unity: void Update()
 func _process(delta: float) -> void:
 	# Unity: if (Input.GetMouseButton(0))
+
+	
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		# Unity: float mouseX = Input.GetAxis("Mouse X");
 		var mouse_x: float 
@@ -118,28 +124,41 @@ func _physics_process(delta):
 		#get_tree().get_first_node_in_group("Teste").add_child(meshIns)
 		
 		var result = RayCast()
-
 		if result.has("position"):
-			#print(result)
-			
+			scaled_to_local(camera_quadtree)
+			CameraManager.switch_scaled_to_local()
 			#var PosSphere = result["position"]
-			
 			#var NormalSphere = result["normal"]
-			
-			
-			#var rotFinal = Quaternion(Vector3.UP,NormalSphere)
-			var pos : Vector3 = result["position"]
-			pos = pos.normalized()
-			var raio_seg = radius + raio_seguranca
-			print(result["position"],"global_position")
-			print(pos,"normalizar")
-			print(pos * raio_seg,"multiplicar")
-			
-			
-			
-			teste.global_position = result["position"]
-			#meshIns.global_position = PosSphere
-			#meshIns.quaternion = rotFinal
+			#if result["position"] != Vector3.ZERO:
+				##var rotFinal = Quaternion(Vector3.UP,NormalSphere)
+				#var pos : Vector3 = result["position"]
+				#pos = pos.normalized()
+				#var raio_seg = radius + raio_seguranca
+				#var pos_local = pos * raio_seg
+				#print(result["position"],"global_position")
+				#print(pos,"normalizar")
+				#print(pos * raio_seg,"multiplicar")
+				#var p = pos * radius
+				#teste_scaled.global_position = result["position"]
+				#teste_local.global_position =  p
+				#$"../../../Local_Space/Group_Cameras_Local/Camera_Quadtree".global_position = pos_local
+				##meshIns.global_position = PosSphere
+				##meshIns.quaternion = rotFinal
+
+
+func scaled_to_local(camera):
+	var result : Dictionary = RayCast()
+	#var rotFinal = Quaternion(Vector3.UP,NormalSphere)
+	if result.has("position"):
+		var pos_scaled : Vector3 = result["position"]
+		#normaliza
+		pos_scaled = pos_scaled.normalized()
+		var raio_seg = radius + raio_seguranca
+		var pos_local = pos_scaled * raio_seg
+		teste_scaled.global_position = result["position"]
+		teste_local.global_position =  pos_scaled * radius
+		camera.global_position = pos_local
+
 
 
 func RayCast() -> Dictionary:
@@ -154,7 +173,7 @@ func RayCast() -> Dictionary:
 
 	var result = space_state.intersect_ray(query)
 	return result
-#
-#func _exit_tree():
-	## Avisa o gerente que eu fui destruída (mudei de cena)
-	#CameraManager.unregister_camera(my_id)
+
+func _exit_tree():
+	# Avisa o gerente que eu fui destruída (mudei de cena)
+	CameraManager.unregister_camera(my_id)
