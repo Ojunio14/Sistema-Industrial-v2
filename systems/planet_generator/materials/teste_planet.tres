@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=9 format=3 uid="uid://bkaqbyatee1or"]
+
+[ext_resource type="Texture2D" uid="uid://dvf4f1goiievt" path="res://assets/textures/planets/teste_conti_teste-C.png" id="1_27om1"]
+[ext_resource type="Texture2D" uid="uid://c00mifvb0ul8j" path="res://assets/textures/planets/teste_conti_teste-C-B.png" id="1_grgdv"]
+[ext_resource type="Script" uid="uid://c6oll7xjhna1q" path="res://systems/planet_generator/scripts/PlanetData.gd" id="1_prq3p"]
+[ext_resource type="Script" uid="uid://d05814pfk6yl1" path="res://systems/planet_generator/scripts/PlanetBiomeMap.gd" id="1_yp0ap"]
+[ext_resource type="Script" uid="uid://ldsvtmgwrkyj" path="res://systems/planet_generator/scripts/PlanetHeightMap.gd" id="2_yp0ap"]
+
+[sub_resource type="Resource" id="Resource_27om1"]
+script = ExtResource("1_yp0ap")
+panorama = ExtResource("1_grgdv")
+metadata/_custom_type_script = "uid://d05814pfk6yl1"
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_27om1"]
+fractal_type = 2
+domain_warp_enabled = true
+
+[sub_resource type="Resource" id="Resource_xuqhq"]
+script = ExtResource("2_yp0ap")
+panorama = ExtResource("1_27om1")
+metadata/_custom_type_script = "uid://ldsvtmgwrkyj"
+
+[resource]
+script = ExtResource("1_prq3p")
+radius = 400.0
+resolution = 100
+amplitude = 5.0
+height_map = SubResource("Resource_xuqhq")
+biome_map = SubResource("Resource_27om1")
+biome_colors = Array[Color]([Color(0, 1, 0, 1), Color(1, 1, 0, 1), Color(0, 0, 1, 1), Color(0, 0, 0, 1)])
+color_tolerance = 0.5
+biome_noises = Array[FastNoiseLite]([SubResource("FastNoiseLite_27om1"), null, null, null])
+biome_noise_amplitude = Array[float]([5.0, 0.0, 0.0, 0.0])
+metadata/_custom_type_script = "uid://c6oll7xjhna1q"

@@ -1,0 +1,19 @@
+[gd_resource type="ShaderMaterial" load_steps=5 format=3 uid="uid://ccsiwj34l0r0d"]
+
+[ext_resource type="Shader" uid="uid://ex0a3waffjug" path="res://systems/planet_generator/materials/planet_teste.gdshader" id="1_5hdp2"]
+[ext_resource type="Texture2D" uid="uid://cxur5rxbj72ax" path="res://assets/textures/planets/aerial_rocks_04_diff_2k.jpg" id="2_7i0rp"]
+
+[sub_resource type="Gradient" id="Gradient_7i0rp"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_g2rqt"]
+gradient = SubResource("Gradient_7i0rp")
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_5hdp2")
+shader_parameter/tex_base = SubResource("GradientTexture1D_g2rqt")
+shader_parameter/tex_0 = ExtResource("2_7i0rp")
+shader_parameter/tex_1 = ExtResource("2_7i0rp")
+shader_parameter/tex_2 = ExtResource("2_7i0rp")
+shader_parameter/uv_scale = 1.0
+shader_parameter/blend_sharpness = 4.0

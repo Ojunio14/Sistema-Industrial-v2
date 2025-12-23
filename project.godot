@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 CameraManager="*res://systems/camera_manager/CameraManager.gd"
 
+[global_group]
+
+Camera_Quadtree=""
+
 [input]
 
 G={

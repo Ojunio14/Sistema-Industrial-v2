@@ -30,8 +30,6 @@ sensitivity = 0.5
 orbit_radius = 60.0
 minimum_orbit_distance = 90.0
 maximum_orbit_distance = 600.0
-radius = 400
-raio_seguranca = 20
 
 [node name="Local_Space" type="Node3D" parent="."]
 
@@ -41,6 +39,7 @@ raio_seguranca = 20
 
 [node name="Camera_Quadtree" parent="Local_Space/Group_Cameras_Local" instance=ExtResource("4_axlbv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 400, 0, 0)
+far = 300000.0
 
 [node name="teste_local" type="MeshInstance3D" parent="."]
 layers = 2

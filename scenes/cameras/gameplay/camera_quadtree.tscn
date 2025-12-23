@@ -2,6 +2,6 @@
 
 [ext_resource type="Script" uid="uid://brfob8en7henu" path="res://scenes/cameras/scripts/camera_quadtree.gd" id="1_oo11n"]
 
-[node name="Camera_Quadtree" type="Camera3D"]
+[node name="Camera_Quadtree" type="Camera3D" groups=["Camera_Quadtree"]]
 cull_mask = 1048574
 script = ExtResource("1_oo11n")

@@ -158,6 +158,7 @@ func scaled_to_local(camera):
 		teste_scaled.global_position = result["position"]
 		teste_local.global_position =  pos_scaled * radius
 		camera.global_position = pos_local
+		print(pos_local)
 
 
 
