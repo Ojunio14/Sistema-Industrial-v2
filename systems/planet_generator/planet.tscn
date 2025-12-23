@@ -1,40 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://bie5gppop55w8"]
+[gd_scene load_steps=3 format=3 uid="uid://bie5gppop55w8"]
 
 [ext_resource type="Script" uid="uid://he37ho2jhhtk" path="res://systems/planet_generator/scripts/planet.gd" id="1_5hgi1"]
 [ext_resource type="Resource" uid="uid://bkaqbyatee1or" path="res://systems/planet_generator/materials/teste_planet.tres" id="2_n8883"]
-[ext_resource type="Script" uid="uid://ck23hn8syc5uy" path="res://systems/planet_generator/scripts/planet_mesh_face.gd" id="3_b02po"]
-[ext_resource type="Material" uid="uid://ccsiwj34l0r0d" path="res://systems/planet_generator/materials/planet_shader.tres" id="3_opnpt"]
 
 [node name="Planet" type="Node3D"]
 script = ExtResource("1_5hgi1")
-planeta_data = ExtResource("2_n8883")
-
-[node name="Up" type="MeshInstance3D" parent="."]
-material_override = ExtResource("3_opnpt")
-script = ExtResource("3_b02po")
-normal = Vector3(0, 1, 0)
-
-[node name="Down" type="MeshInstance3D" parent="."]
-material_override = ExtResource("3_opnpt")
-script = ExtResource("3_b02po")
-normal = Vector3(0, -1, 0)
-
-[node name="Left" type="MeshInstance3D" parent="."]
-material_override = ExtResource("3_opnpt")
-script = ExtResource("3_b02po")
-normal = Vector3(-1, 0, 0)
-
-[node name="Right" type="MeshInstance3D" parent="."]
-material_override = ExtResource("3_opnpt")
-script = ExtResource("3_b02po")
-normal = Vector3(1, 0, 0)
-
-[node name="Front" type="MeshInstance3D" parent="."]
-material_override = ExtResource("3_opnpt")
-script = ExtResource("3_b02po")
-normal = Vector3(0, 0, 1)
-
-[node name="Back" type="MeshInstance3D" parent="."]
-material_override = ExtResource("3_opnpt")
-script = ExtResource("3_b02po")
-normal = Vector3(0, 0, -1)
+planet_data = ExtResource("2_n8883")

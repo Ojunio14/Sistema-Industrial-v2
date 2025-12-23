@@ -18,11 +18,11 @@ var mesh_instance : PlanetMeshFace = null
 var is_split : bool = false
 
 # --- CONFIGURAÇÃO DE LOD ---
-const MAX_DEPTH = 12
+const MAX_DEPTH = 8
 # REDUZI DE 2.0 PARA 1.25
 # Isso faz com que partes longe parem de se dividir, economizando performance
 # e criando o efeito visual de "resolução menor ao longe".
-const SPLIT_MULTIPLIER = 3.0#1.25
+const SPLIT_MULTIPLIER = 2.0#1.25
 
 func initialize(_planet_data, _normal, _origin, _size, _depth, _parent_planet, _camera):
 	planet_data = _planet_data

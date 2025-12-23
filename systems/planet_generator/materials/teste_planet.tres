@@ -12,8 +12,9 @@ panorama = ExtResource("1_grgdv")
 metadata/_custom_type_script = "uid://d05814pfk6yl1"
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_27om1"]
+frequency = 0.005
 fractal_type = 2
-domain_warp_enabled = true
+fractal_octaves = 3
 
 [sub_resource type="Resource" id="Resource_xuqhq"]
 script = ExtResource("2_yp0ap")
