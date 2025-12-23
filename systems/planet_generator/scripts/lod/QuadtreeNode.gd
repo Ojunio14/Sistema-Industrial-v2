@@ -18,7 +18,7 @@ var mesh_instance : PlanetMeshFace = null
 var is_split : bool = false
 
 # --- CONFIGURAÇÃO DE LOD ---
-const MAX_DEPTH = 8
+const MAX_DEPTH = 12
 # REDUZI DE 2.0 PARA 1.25
 # Isso faz com que partes longe parem de se dividir, economizando performance
 # e criando o efeito visual de "resolução menor ao longe".
