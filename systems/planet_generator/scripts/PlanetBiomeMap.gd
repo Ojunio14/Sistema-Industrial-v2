@@ -14,31 +14,55 @@ func prepare_data():
 	if panorama: _image = panorama.get_image()
 
 # DIFERENÇA PRINCIPAL: Retorna uma COLOR completa (r, g, b)
+#func get_color_at_uv_smooth(u: float, v: float) -> Color:
+	#if not _image: return Color.BLACK # Retorna preto se não tiver imagem
+	#
+	#var w = _image.get_width()
+	#var h = _image.get_height()
+	#
+	#var x = u * (w - 1)
+	#var y = v * (h - 1)
+	#
+	#var x_floor = int(x)
+	#var y_floor = int(y)
+	#var x_ceil = min(x_floor + 1, w - 1)
+	#var y_ceil = min(y_floor + 1, h - 1)
+	#
+	#var x_lerp = x - x_floor
+	#var y_lerp = y - y_floor
+	#
+	## Pega as Cores dos 4 vizinhos
+	#var top_left = _image.get_pixel(x_floor, y_floor)
+	#var top_right = _image.get_pixel(x_ceil, y_floor)
+	#var bottom_left = _image.get_pixel(x_floor, y_ceil)
+	#var bottom_right = _image.get_pixel(x_ceil, y_ceil)
+	#
+	## Godot faz interpolação de Cores automaticamente com .lerp()
+	#var top_mix = top_left.lerp(top_right, x_lerp)
+	#var bottom_mix = bottom_left.lerp(bottom_right, x_lerp)
+	#
+	#return top_mix.lerp(bottom_mix, y_lerp)
 func get_color_at_uv_smooth(u: float, v: float) -> Color:
-	if not _image: return Color.BLACK # Retorna preto se não tiver imagem
+	if not _image: return Color.BLACK
 	
-	var w = _image.get_width()
-	var h = _image.get_height()
+	var width = _image.get_width()
+	var height = _image.get_height()
 	
-	var x = u * (w - 1)
-	var y = v * (h - 1)
+	# --- A CORREÇÃO ESTÁ AQUI ---
 	
-	var x_floor = int(x)
-	var y_floor = int(y)
-	var x_ceil = min(x_floor + 1, w - 1)
-	var y_ceil = min(y_floor + 1, h - 1)
+	# 1. WRAP (Dar a volta): Se passar da largura, volta pro começo
+	# Usamos fposmod para garantir que funcione até com números negativos
+	u = fposmod(u, 1.0)
 	
-	var x_lerp = x - x_floor
-	var y_lerp = y - y_floor
+	# 2. CLAMP (Travar): No Polo Norte/Sul não dá volta, só trava
+	v = clamp(v, 0.0, 0.999) 
 	
-	# Pega as Cores dos 4 vizinhos
-	var top_left = _image.get_pixel(x_floor, y_floor)
-	var top_right = _image.get_pixel(x_ceil, y_floor)
-	var bottom_left = _image.get_pixel(x_floor, y_ceil)
-	var bottom_right = _image.get_pixel(x_ceil, y_ceil)
+	# Converte UV (0.0 a 1.0) para Pixels (0 a 499)
+	var x = int(u * width)
+	var y = int(v * height)
 	
-	# Godot faz interpolação de Cores automaticamente com .lerp()
-	var top_mix = top_left.lerp(top_right, x_lerp)
-	var bottom_mix = bottom_left.lerp(bottom_right, x_lerp)
+	# Segurança Extra (Garante que nunca vai pedir o 500)
+	x = posmod(x, width) # Se for 500, vira 0
+	y = clamp(y, 0, height - 1) # Se for 500, vira 499
 	
-	return top_mix.lerp(bottom_mix, y_lerp)
+	return _image.get_pixel(x, y)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://baehs7yh20b45"]
 
 [ext_resource type="Script" uid="uid://bbpqou2i3av0d" path="res://scenes/universe/planets/earth/earth_pivot.gd" id="1_44wpc"]
-[ext_resource type="Texture2D" uid="uid://dvf4f1goiievt" path="res://assets/textures/planets/teste_conti_teste-C.png" id="2_44wpc"]
+[ext_resource type="Texture2D" uid="uid://bhe2nxr4a0e7o" path="res://assets/textures/planets/teste_conti_teste-C-B-1.png" id="2_44wpc"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_5qyuk"]
 radius = 50.0
