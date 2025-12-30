@@ -41,6 +41,8 @@ maximum_orbit_distance = 600.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50010, 0, 0)
 far = 300000.0
 
+[node name="teste_contru" type="Node3D" parent="Local_Space" groups=["teste_cons"]]
+
 [node name="teste_local" type="MeshInstance3D" parent="."]
 layers = 2
 mesh = SubResource("SphereMesh_axlbv")

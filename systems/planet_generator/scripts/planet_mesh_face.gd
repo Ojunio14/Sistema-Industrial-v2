@@ -3,7 +3,7 @@ class_name PlanetMeshFace
 
 # --- CONFIGURAÇÃO DE VISUALIZAÇÃO ---
 enum ViewMode { SOLID, WIREFRAME, HYBRID }
-const CURRENT_MODE : ViewMode = ViewMode.SOLID
+const CURRENT_MODE : ViewMode = ViewMode.HYBRID
 
 # Material com o Shader dos Biomas
 var custom_material : Material 
@@ -11,7 +11,7 @@ var custom_material : Material
 var normal : Vector3
 var chunk_origin : Vector2
 var chunk_size : float
-var resolution : int = 18
+var resolution : int = 64
 
 func _ready() -> void:
 	# Camadas de visibilidade (Ajuste conforme seu projeto)
@@ -327,7 +327,8 @@ func _update_mesh(arrays : Array):
 				self.material_override = wire_mat
 	
 	# Colisão (Código original)
-	if get_parent() and "depth" in get_parent() and get_parent().depth > 5:
+	#if get_parent() and "depth" in get_parent() and get_parent().depth > 8:
+	if get_parent().depth >= 8: # Ajuste esse número para o seu MAX_DEPTH
 		create_trimesh_collision()
 	else:
 		for child in get_children():

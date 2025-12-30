@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MaterialDefinition" load_steps=2 format=3 uid="uid://ctoivihxu4ljt"]
+
+[ext_resource type="Script" uid="uid://dnsx8a6co4kh" path="res://systems/terrain_modifier/scripts/MaterialDefinition.gd" id="1_sd4nn"]
+
+[resource]
+script = ExtResource("1_sd4nn")
+id = &"rock"
+display_name = "Rocha Mae"
+hardness = 5.0
+metadata/_custom_type_script = "uid://dnsx8a6co4kh"

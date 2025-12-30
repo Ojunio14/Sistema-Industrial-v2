@@ -1,0 +1,63 @@
+[gd_scene load_steps=2 format=3 uid="uid://dd14luwllwm2w"]
+
+[sub_resource type="GDScript" id="GDScript_4xowi"]
+script/source = "extends Node3D
+
+func _ready():
+	print(\"--- INICIANDO TESTE DE LABORATÓRIO ---\")
+	
+	# 1. CRIAR MATERIAIS FAKE (Só para o teste, sem criar arquivos .tres)
+	var mat_pedra = MaterialDefinition.new()
+	mat_pedra.id = \"rock\"
+	mat_pedra.display_name = \"Pedra Basáltica\"
+	
+	var mat_terra = MaterialDefinition.new()
+	mat_terra.id = \"dirt\"
+	mat_terra.display_name = \"Terra Fértil\"
+	
+	# 2. CRIAR O TUBO DE ENSAIO (Nossa Stack vazia)
+	var stack = MaterialStack.new()
+	print(\"Stack criada. Camadas atuais: \", stack.layers.size()) # Esperado: 0
+	
+	# 3. TESTE DE ATERRO (DUMPING)
+	print(\"\\n>>> TESTE 1: Adicionando 10.0 de Pedra (Base)\")
+	stack.add_material(mat_pedra, 10.0)
+	imprimir_estado(stack) 
+	# Esperado: Camada 0 = Pedra (10.0)
+	
+	print(\"\\n>>> TESTE 2: Adicionando 5.0 de Terra (Topo)\")
+	stack.add_material(mat_terra, 5.0)
+	imprimir_estado(stack)
+	# Esperado: Camada 0 = Terra (5.0), Camada 1 = Pedra (10.0)
+	
+	# 4. TESTE DE ESCAVAÇÃO (MINING)
+	print(\"\\n>>> TESTE 3: Escavando 2.0 unidades\")
+	var resultado1 = stack.remove_volume(2.0)
+	print(\"Minerado: \", resultado1[\"amount\"], \" de \", resultado1[\"mat\"].display_name)
+	imprimir_estado(stack)
+	# Esperado: Tirei 2 de terra. Ainda deve sobrar 3 de Terra no topo.
+	
+	print(\"\\n>>> TESTE 4: Escavando 100.0 unidades (Tentando tirar mais do que existe)\")
+	# Aqui testamos a lógica de segurança. A camada de terra só tem 3.0 sobrando.
+	var resultado2 = stack.remove_volume(100.0)
+	print(\"Minerado: \", resultado2[\"amount\"], \" de \", resultado2[\"mat\"].display_name)
+	imprimir_estado(stack)
+	# Esperado: O código deve me dar apenas 3.0 (tudo o que tinha) e a camada de Terra deve SUMIR.
+	# A Pedra deve virar o novo Topo (índice 0).
+
+# Função auxiliar só para mostrar bonitinho no console
+func imprimir_estado(s: MaterialStack):
+	print(\"Estado Atual da Stack:\")
+	if s.layers.is_empty():
+		print(\"  [ VAZIO ]\")
+		return
+		
+	for i in range(s.layers.size()):
+		var camada = s.layers[i]
+		var nome = camada[\"def\"].display_name
+		var vol = camada[\"vol\"]
+		print(\"  Indice [%d]: %s (Volume: %s)\" % [i, nome, vol])
+"
+
+[node name="Node3D" type="Node3D"]
+script = SubResource("GDScript_4xowi")

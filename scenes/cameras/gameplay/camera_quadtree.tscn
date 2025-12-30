@@ -1,7 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://c0xs72njgco5h"]
+[gd_scene load_steps=3 format=3 uid="uid://c0xs72njgco5h"]
 
 [ext_resource type="Script" uid="uid://brfob8en7henu" path="res://scenes/cameras/scripts/camera_quadtree.gd" id="1_oo11n"]
+[ext_resource type="Script" uid="uid://doks8hin1yw0b" path="res://systems/terrain_modifier/scripts/mining_tool.gd" id="2_de6lw"]
 
 [node name="Camera_Quadtree" type="Camera3D" groups=["Camera_Quadtree"]]
 cull_mask = 1048574
 script = ExtResource("1_oo11n")
+
+[node name="MiningTool" type="Node" parent="." node_paths=PackedStringArray("player_camera")]
+script = ExtResource("2_de6lw")
+player_camera = NodePath("..")

@@ -51,6 +51,27 @@ func _input(event):
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _process(delta):
+	if Input.is_action_just_pressed("G"):
+		var meshIns : MeshInstance3D = MeshInstance3D.new()
+		var boxMesh : BoxMesh = BoxMesh.new()
+		boxMesh.size = Vector3(4,5,4)
+		var capsuleMesh : CapsuleMesh = CapsuleMesh.new()
+		capsuleMesh.radius = 3
+		capsuleMesh.height = 16
+		meshIns.mesh = boxMesh#capsuleMesh
+		meshIns.set_layer_mask_value(1, false)
+		meshIns.set_layer_mask_value(2, true)
+		#get_tree().get_first_node_in_group("Teste").add_child(meshIns)
+		
+		var result = RayCast()
+		if result.has("position"):
+			get_tree().get_first_node_in_group("teste_cons").add_child(meshIns)
+			print(result)
+			var NormalSphere = result["normal"]
+			var rotFinal = Quaternion(Vector3.UP,NormalSphere)
+			meshIns.global_position = result["position"]
+			meshIns.quaternion = rotFinal
+			
 	# Se o mouse não estiver capturado, não move
 	if Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:
 		return
@@ -84,6 +105,24 @@ func _process(delta):
 	# --- 2. CORREÇÃO DE HORIZONTE (A Mágica do Planeta) ---
 	# Chamamos a função que recalcula a rotação para alinhar com o planeta
 	align_horizon_to_planet()
+
+
+const RAY_LENGTH : = 4000
+
+func RayCast() -> Dictionary:
+	var space_state = get_world_3d().direct_space_state
+	var cam = get_viewport().get_camera_3d()
+	var mousepos = get_viewport().get_mouse_position()
+
+	var origin = cam.project_ray_origin(mousepos)
+	var end = origin + cam.project_ray_normal(mousepos) * RAY_LENGTH
+	var query = PhysicsRayQueryParameters3D.create(origin, end)
+	#query.collide_with_areas = true
+
+	var result = space_state.intersect_ray(query)
+	return result
+
+
 
 func align_horizon_to_planet():
 	# SEGURANÇA 1: Não calcular se estivermos muito perto do centro (evita divisão por zero)

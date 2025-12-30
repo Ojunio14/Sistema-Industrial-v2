@@ -127,6 +127,7 @@ func _physics_process(delta):
 		if result.has("position"):
 			scaled_to_local(camera_quadtree)
 			CameraManager.switch_scaled_to_local()
+			process_mode = Node.PROCESS_MODE_DISABLED
 			#var PosSphere = result["position"]
 			#var NormalSphere = result["normal"]
 			#if result["position"] != Vector3.ZERO:
