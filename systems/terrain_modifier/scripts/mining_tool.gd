@@ -183,7 +183,22 @@ func _process(delta):
 		elif is_dragging:
 			is_dragging = false
 			print("Área Selecionada! De: ", start_grid, " Até: ", current_grid)
+
+# Chama a função que criamos no Data
+			var report = data.apply_flattening_area(start_grid, current_grid, target_height)
 			
+			if report["modified"] > 0:
+				print("Mineração Concluída!")
+				print("Terra removida: ", report["dirt"])
+				print("Pedra removida: ", report["rock"])
+				
+				# AQUI NO FUTURO: Inventory.add("Dirt", report["dirt"])
+			else:
+				print("Nenhuma alteração feita.")
+			
+			# Limpa o Gizmo visual
+			gizmo.update_gizmo(Vector2i(-1,-1), Vector2i(-1,-1), data, 0, 0)
+
 			# AQUI VIRIA A LÓGICA DE APLICAR (Parte 4)
 			# _apply_flattening(start_grid, current_grid, target_height)
 			

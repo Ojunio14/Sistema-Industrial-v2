@@ -244,3 +244,60 @@ func set_height(x: int, y: int, new_height: float):
 	
 	# Altera o valor na memória
 	height_map[y * vertex_resolution + x] = new_height
+
+# No final de ActiveZoneData.gd
+
+# Função chamada quando o jogador solta o mouse para confirmar a mineração
+func apply_flattening_area(start: Vector2i, end: Vector2i, target_height: float) -> Dictionary:
+	var min_x = min(start.x, end.x)
+	var max_x = max(start.x, end.x)
+	var min_y = min(start.y, end.y)
+	var max_y = max(start.y, end.y)
+	
+	var total_dirt_removed : float = 0.0
+	var total_rock_removed : float = 0.0
+	var cells_modified : int = 0
+	
+	for y in range(min_y, max_y + 1):
+		for x in range(min_x, max_x + 1):
+			if x >= vertex_resolution or y >= vertex_resolution: continue
+			
+			var current_h = get_height_safe(x, y)
+			
+			# Calcula diferença (Volume desta célula)
+			# Nota: Estamos tratando vértice como célula para simplificar volume
+			var diff = current_h - target_height
+			
+			# Se diff > 0, estamos cavando (removendo terra)
+			# Se diff < 0, estamos aterrando (precisa de terra) - Vamos focar em cavar agora
+			
+			if abs(diff) > 0.01: # Só altera se tiver mudança real
+				
+				# Verifica que material estamos tirando (baseado na profundidade original)
+				# Se já estamos fundo, é pedra. Se estamos na superfície, é terra.
+				var mat_id = get_material_id(min(x, resolution-1), min(y, resolution-1))
+				
+				if diff > 0: # Cavando
+					if mat_id == 2: # Pedra
+						total_rock_removed += diff
+					else: # Terra
+						total_dirt_removed += diff
+				
+				# APLICA A NOVA ALTURA
+				set_height(x, y, target_height)
+				
+				# Atualiza o tipo de material (se cavou fundo demais, vira pedra)
+				_update_material_based_on_depth(x, y, target_height)
+				
+				cells_modified += 1
+	
+	# Avisa o Mesh para reconstruir TUDO de uma vez
+	if cells_modified > 0:
+		emit_signal("data_changed")
+	
+	# Retorna o relatório para o jogo (Inventário)
+	return {
+		"dirt": total_dirt_removed,
+		"rock": total_rock_removed,
+		"modified": cells_modified
+	}
