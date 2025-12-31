@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://bplmxroxixgtv"]
+
+[ext_resource type="Script" uid="uid://d0tjbnc6avd5r" path="res://systems/terrain_modifier/scripts/AdaptiveCursor.gd" id="1_awv2l"]
+
+[node name="MeshInstance" type="MeshInstance3D"]
+script = ExtResource("1_awv2l")
+
+[node name="Label3D" type="Label3D" parent="."]
+layers = 2
+pixel_size = 0.01
+billboard = 1
+no_depth_test = true
+text = "0"
+font_size = 64

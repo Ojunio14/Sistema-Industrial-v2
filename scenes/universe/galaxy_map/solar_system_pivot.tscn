@@ -33,7 +33,7 @@ maximum_orbit_distance = 600.0
 
 [node name="Local_Space" type="Node3D" parent="."]
 
-[node name="Earth" parent="Local_Space" instance=ExtResource("3_d52ay")]
+[node name="Earth" parent="Local_Space" groups=["earth"] instance=ExtResource("3_d52ay")]
 
 [node name="Group_Cameras_Local" type="Node3D" parent="Local_Space"]
 
