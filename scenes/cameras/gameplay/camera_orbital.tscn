@@ -4,7 +4,7 @@
 
 [node name="Camera_Orbital" type="Node3D"]
 script = ExtResource("1_6hot4")
-radius = 5000
+radius = 50000
 raio_seguranca = 20
 
 [node name="Camera" type="Camera3D" parent="."]

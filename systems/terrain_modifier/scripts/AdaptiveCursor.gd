@@ -32,11 +32,11 @@ func _ready():
 		# Adiciona ele na pool como o primeiro item
 		label_pool.append(label_template)
 
-func update_gizmo(start: Vector2i, end: Vector2i, data: ActiveZoneData, radius: float, target_height: float):
+# Substitua a função update_gizmo inteira por esta:
+
+func update_gizmo(start: Vector2i, end: Vector2i, data: ActiveZoneData, radius: float, start_height: float, end_height: float):
 	if mesh == null: mesh = ImmediateMesh.new()
 	mesh.clear_surfaces()
-	
-	# Esconde todos os labels da rodada anterior
 	_hide_all_labels()
 	
 	if start == Vector2i(-1, -1): return
@@ -46,7 +46,19 @@ func update_gizmo(start: Vector2i, end: Vector2i, data: ActiveZoneData, radius: 
 	var min_y = min(start.y, end.y)
 	var max_y = max(start.y, end.y)
 	
-	# Proteção: Se a área for muito grande, aumentamos o "step" para não desenhar linhas demais
+	# Dados para calcular inclinação visual (Rampa)
+# --- CORREÇÃO: ALINHAMENTO DE EIXO (SNAP VISUAL) ---
+	var diff = end - start
+	var ramp_vec = Vector2.ZERO
+	
+	if abs(diff.x) > abs(diff.y):
+		ramp_vec = Vector2(diff.x, 0)
+	else:
+		ramp_vec = Vector2(0, diff.y)
+		
+	var ramp_len_sq = ramp_vec.length_squared()
+	
+	# Otimização de área
 	var area = (max_x - min_x) * (max_y - min_y)
 	var step = 1
 	if area > 800: step = 2
@@ -58,8 +70,7 @@ func update_gizmo(start: Vector2i, end: Vector2i, data: ActiveZoneData, radius: 
 	var axisA = axes[0]
 	var axisB = axes[1]
 	
-	var vertices_added = false
-	var label_count = 0 # Contador de labels usados
+	var label_count = 0
 	
 	for y in range(min_y, max_y + 1, step):
 		for x in range(min_x, max_x + 1, step):
@@ -67,51 +78,79 @@ func update_gizmo(start: Vector2i, end: Vector2i, data: ActiveZoneData, radius: 
 			
 			var current_h = data.get_height_safe(x, y)
 			
-			var pos_top = _calc_pos(x, y, data, radius, current_h, axisA, axisB)
-			var pos_bottom = _calc_pos(x, y, data, radius, target_height, axisA, axisB)
+			# --- 1. CALCULA ALTURA ALVO DESTE PONTO (Interpolação da Rampa) ---
+			var target_h_here = start_height
+			if ramp_len_sq > 0:
+				var curr_vec = Vector2(x - start.x, y - start.y)
+				# Projeção escalar clampada entre 0 e 1
+				var t = clamp(curr_vec.dot(ramp_vec) / ramp_len_sq, 0.0, 1.0)
+				target_h_here = lerp(start_height, end_height, t)
 			
-			# --- DESENHO DAS LINHAS (Gaiola) ---
+			# --- 2. POSIÇÕES 3D ---
+			var pos_top = _calc_pos(x, y, data, radius, current_h, axisA, axisB)
+			var pos_bottom = _calc_pos(x, y, data, radius, target_h_here, axisA, axisB)
+			
+			# --- 3. DESENHO VERTICAL (PAREDES) ---
+			# Desenha nos cantos da seleção OU se houver diferença de altura
 			var is_corner = (x == min_x or x == max_x) and (y == min_y or y == max_y)
-			if is_corner or abs(target_height - current_h) > 0.1:
+			if is_corner or abs(target_h_here - current_h) > 0.1:
 				mesh.surface_add_vertex(pos_bottom)
 				mesh.surface_add_vertex(pos_top)
-				vertices_added = true
 			
-			if x < max_x: # Linhas horizontais e teto
+			# --- 4. CONEXÕES COM VIZINHO DA DIREITA (X + step) ---
+			if x < max_x:
+				# Altura REAL do vizinho (para o teto)
 				var next_h = data.get_height_safe(x + step, y)
 				var next_p_top = _calc_pos(x + step, y, data, radius, next_h, axisA, axisB)
-				var next_p_bottom = _calc_pos(x + step, y, data, radius, target_height, axisA, axisB)
-				mesh.surface_add_vertex(pos_top); mesh.surface_add_vertex(next_p_top)
-				mesh.surface_add_vertex(pos_bottom); mesh.surface_add_vertex(next_p_bottom)
-				vertices_added = true
 				
-			if y < max_y: # Linhas verticais e teto
+				# Altura ALVO do vizinho (para o chão da rampa)
+				var next_t_h = start_height
+				if ramp_len_sq > 0:
+					var next_vec = Vector2((x + step) - start.x, y - start.y)
+					var t_next = clamp(next_vec.dot(ramp_vec) / ramp_len_sq, 0.0, 1.0)
+					next_t_h = lerp(start_height, end_height, t_next)
+				var next_p_bottom = _calc_pos(x + step, y, data, radius, next_t_h, axisA, axisB)
+				
+				# Desenha Teto (Top -> Next Top)
+				mesh.surface_add_vertex(pos_top)
+				mesh.surface_add_vertex(next_p_top)
+				
+				# Desenha Chão (Bottom -> Next Bottom)
+				mesh.surface_add_vertex(pos_bottom)
+				mesh.surface_add_vertex(next_p_bottom)
+				
+			# --- 5. CONEXÕES COM VIZINHO DE BAIXO (Y + step) ---
+			if y < max_y:
+				# Altura REAL do vizinho (para o teto)
 				var next_h = data.get_height_safe(x, y + step)
 				var next_p_top = _calc_pos(x, y + step, data, radius, next_h, axisA, axisB)
-				var next_p_bottom = _calc_pos(x, y + step, data, radius, target_height, axisA, axisB)
-				mesh.surface_add_vertex(pos_top); mesh.surface_add_vertex(next_p_top)
-				mesh.surface_add_vertex(pos_bottom); mesh.surface_add_vertex(next_p_bottom)
-				vertices_added = true
-
-			# --- LÓGICA DO LABEL POR QUADRADO ---
-			# Só colocamos label se estivermos dentro do limite (x < max_x e y < max_y)
-			# E se não tivermos estourado o limite de performance (MAX_LABELS)
-			if x < max_x and y < max_y and label_count < MAX_LABELS:
-				# Calcula o centro da célula
-				var center_pos = _calc_pos_center(x, y, data, radius, target_height, axisA, axisB)
 				
-				# Pega um label da piscina
+				# Altura ALVO do vizinho (para o chão da rampa)
+				var next_t_h_y = start_height
+				if ramp_len_sq > 0:
+					var next_vec_y = Vector2(x - start.x, (y + step) - start.y)
+					var t_next_y = clamp(next_vec_y.dot(ramp_vec) / ramp_len_sq, 0.0, 1.0)
+					next_t_h_y = lerp(start_height, end_height, t_next_y)
+				var next_p_bottom_y = _calc_pos(x, y + step, data, radius, next_t_h_y, axisA, axisB)
+				
+				# Desenha Teto
+				mesh.surface_add_vertex(pos_top)
+				mesh.surface_add_vertex(next_p_top)
+				
+				# Desenha Chão
+				mesh.surface_add_vertex(pos_bottom)
+				mesh.surface_add_vertex(next_p_bottom_y)
+
+			# --- 6. LABELS (Opcional - se estiver usando) ---
+			if x < max_x and y < max_y and label_count < MAX_LABELS:
+				var center_pos = _calc_pos_center(x, y, data, radius, target_h_here, axisA, axisB)
 				var lbl = _get_label_from_pool(label_count)
 				lbl.visible = true
-				lbl.position = to_local(center_pos) # Converte para local se o Gizmo não estiver na origem
-				lbl.text = "%d" % int(target_height) # Mostra só o número inteiro
-				
+				lbl.position = to_local(center_pos)
+				lbl.text = "%d" % int(target_h_here)
 				label_count += 1
 
-	if vertices_added:
-		mesh.surface_end()
-	else:
-		mesh.clear_surfaces()
+	mesh.surface_end()
 
 # --- SISTEMA DE POOLING ---
 func _get_label_from_pool(index: int) -> Label3D:
