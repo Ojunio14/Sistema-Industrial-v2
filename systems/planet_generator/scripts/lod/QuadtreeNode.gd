@@ -22,7 +22,7 @@ var is_active_zone : bool = false
 var active_data : ActiveZoneData
 var active_mesh : ActiveZoneMesh
 
-const MAX_DEPTH = 12
+const MAX_DEPTH = 8
 const SPLIT_MULTIPLIER = 3.0 # Volte para o valor que você gostava (2.0 ou 1.25)
 
 func initialize(_planet_data, _normal, _origin, _size, _depth, _parent_planet, _camera):

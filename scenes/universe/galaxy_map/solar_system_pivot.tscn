@@ -1,9 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://b8vgcafodkfu6"]
+[gd_scene load_steps=10 format=3 uid="uid://b8vgcafodkfu6"]
 
 [ext_resource type="PackedScene" uid="uid://baehs7yh20b45" path="res://scenes/universe/planets/earth/earth_pivot.tscn" id="1_0jov3"]
 [ext_resource type="PackedScene" uid="uid://ck22ovow7cbe6" path="res://scenes/cameras/gameplay/camera_orbital.tscn" id="2_7we4f"]
 [ext_resource type="PackedScene" uid="uid://ckhhkyswqw0bk" path="res://scenes/universe/planets/earth/earth.tscn" id="3_d52ay"]
 [ext_resource type="PackedScene" uid="uid://c0xs72njgco5h" path="res://scenes/cameras/gameplay/camera_quadtree.tscn" id="4_axlbv"]
+[ext_resource type="PackedScene" uid="uid://bds0p3y7ntc6n" path="res://scenes/cameras/gameplay/camera_rts.tscn" id="5_laxcg"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_axlbv"]
 
@@ -30,6 +31,7 @@ sensitivity = 0.5
 orbit_radius = 60.0
 minimum_orbit_distance = 90.0
 maximum_orbit_distance = 600.0
+raio_seguranca = 10
 
 [node name="Local_Space" type="Node3D" parent="."]
 
@@ -40,6 +42,11 @@ maximum_orbit_distance = 600.0
 [node name="Camera_Quadtree" parent="Local_Space/Group_Cameras_Local" instance=ExtResource("4_axlbv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50010, 0, 0)
 far = 300000.0
+
+[node name="Camera_Rts" parent="Local_Space/Group_Cameras_Local" groups=["Camera_Rts"] instance=ExtResource("5_laxcg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5010, 0, 0)
+planet_radius = 5000.0
+max_zoom = 30.0
 
 [node name="teste_contru" type="Node3D" parent="Local_Space" groups=["teste_cons"]]
 

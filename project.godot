@@ -24,6 +24,7 @@ CameraManager="*res://systems/camera_manager/CameraManager.gd"
 Camera_Quadtree=""
 teste_cons=""
 earth=""
+Camera_Rts=""
 
 [input]
 

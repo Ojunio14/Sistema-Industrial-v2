@@ -23,6 +23,7 @@ var _mouse_motion: Vector2 = Vector2.ZERO
 @export var my_id : String = "Orbital"
 
 @onready var camera_quadtree: Camera3D = $"../../../Local_Space/Group_Cameras_Local/Camera_Quadtree"
+@onready var camera_rts: Node3D = $"../../../Local_Space/Group_Cameras_Local/Camera_Rts"
 
 @onready var teste_local: MeshInstance3D = $"../../../teste_local"
 @onready var teste_scaled: MeshInstance3D = $"../../../teste_Scaled"
@@ -126,6 +127,7 @@ func _physics_process(delta):
 		var result = RayCast()
 		if result.has("position"):
 			scaled_to_local(camera_quadtree)
+			scaled_to_local(camera_rts)
 			CameraManager.switch_scaled_to_local()
 			process_mode = Node.PROCESS_MODE_DISABLED
 			#var PosSphere = result["position"]

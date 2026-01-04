@@ -7,7 +7,8 @@ extends Node3D
 @export var viewer : Camera3D 
 
 func _ready():
-	viewer = get_tree().get_first_node_in_group("Camera_Quadtree")
+	var rig_cam = get_tree().get_first_node_in_group("Camera_Rts").get_node("GimbalElevation/Camera")
+	viewer = rig_cam#get_tree().get_first_node_in_group("Camera_Rts")
 	generate_planet()
 
 func generate_planet():

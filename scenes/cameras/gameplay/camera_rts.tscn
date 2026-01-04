@@ -8,3 +8,4 @@ script = ExtResource("1_dp3uf")
 [node name="GimbalElevation" type="Node3D" parent="."]
 
 [node name="Camera" type="Camera3D" parent="GimbalElevation"]
+cull_mask = 1047618

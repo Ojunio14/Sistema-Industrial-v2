@@ -8,7 +8,7 @@ var Camera
 
 func switch_scaled_to_local():
 	
-	switch_to("FreeFly")
+	switch_to("Rts")
 	
 	pass
 
@@ -35,9 +35,9 @@ func switch_to(camera_name: String):
 	
 	# Ativa a nova
 	next_cam.make_current() # Função nativa da Godot que assume o controle
-	if next_cam.my_id == "FreeFly" and next_cam != null :
-		print(next_cam.my_id)
-		next_cam.mouse_captured()
+	#if next_cam.my_id == "FreeFly" and next_cam != null :
+		#print(next_cam.my_id)
+		#next_cam.mouse_captured()
 		#next_cam.Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	current_camera = next_cam
 	

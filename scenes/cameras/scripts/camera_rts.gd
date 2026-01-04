@@ -19,6 +19,8 @@ extends Node3D
 @export var max_pitch : float = -20.0 # Quase no horizonte (não deixe chegar a 0)
 #@export var my_id : CameraManager.Cam_Id
 
+@export var my_id : String = "Rts"
+
 # Variáveis internas
 var target_zoom : float = 20.0
 var current_zoom : float = 20.0
@@ -28,8 +30,9 @@ var camera_angle : float = -45.0 # Angulo padrão RTS
 @onready var camera: Camera3D = $GimbalElevation/Camera
 
 func _ready():
+	CameraManager.register_camera(my_id, camera)
 	#CameraManager.register_camera(my_id,camera)
-	# Configuração inicial dos nós filhos
+	 #Configuração inicial dos nós filhos
 	if gimbal: gimbal.rotation_degrees.x = camera_angle
 	if camera: camera.position.z = current_zoom
 	
