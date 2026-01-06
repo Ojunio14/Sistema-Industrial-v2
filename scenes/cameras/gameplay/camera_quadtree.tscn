@@ -1,28 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://c0xs72njgco5h"]
+[gd_scene load_steps=2 format=3 uid="uid://c0xs72njgco5h"]
 
 [ext_resource type="Script" uid="uid://brfob8en7henu" path="res://scenes/cameras/scripts/camera_quadtree.gd" id="1_oo11n"]
-[ext_resource type="Script" uid="uid://doks8hin1yw0b" path="res://systems/terrain_modifier/scripts/mining_tool.gd" id="2_de6lw"]
-[ext_resource type="PackedScene" uid="uid://bplmxroxixgtv" path="res://scenes/cameras/gameplay/miningGIZMO.tscn" id="3_244i7"]
-[ext_resource type="Script" uid="uid://doinib77clqtv" path="res://scenes/cameras/gameplay/cursor.gd" id="4_tjym0"]
-
-[sub_resource type="ImmediateMesh" id="ImmediateMesh_244i7"]
 
 [node name="Camera_Quadtree" type="Camera3D" groups=["Camera_Quadtree"]]
 cull_mask = 1048574
 script = ExtResource("1_oo11n")
-
-[node name="MiningTool" type="Node" parent="." node_paths=PackedStringArray("player_camera", "gizmo", "cursor_visual")]
-script = ExtResource("2_de6lw")
-player_camera = NodePath("..")
-gizmo = NodePath("MeshInstance")
-cursor_visual = NodePath("../cursor")
-
-[node name="MeshInstance" parent="MiningTool" instance=ExtResource("3_244i7")]
-layers = 2
-mesh = SubResource("ImmediateMesh_244i7")
-skeleton = NodePath("../..")
-
-[node name="cursor" type="MeshInstance3D" parent="." node_paths=PackedStringArray("player_camera")]
-layers = 2
-script = ExtResource("4_tjym0")
-player_camera = NodePath("..")

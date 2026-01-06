@@ -254,56 +254,50 @@ func apply_flattening_area(start: Vector2i, end: Vector2i, target_height: float)
 	var min_y = min(start.y, end.y)
 	var max_y = max(start.y, end.y)
 	
+	# --- SEGURANÇA (CLAMP) PARA MULTI-CHUNK ---
+	# Define os limites do loop para não sair deste chunk específico
+	var loop_min_x = max(0, min_x)
+	var loop_max_x = min(vertex_resolution - 1, max_x)
+	var loop_min_y = max(0, min_y)
+	var loop_max_y = min(vertex_resolution - 1, max_y)
+	
+	# Se a área selecionada nem encosta neste chunk, sai fora
+	if loop_min_x > loop_max_x or loop_min_y > loop_max_y:
+		return {"dirt": 0.0, "rock": 0.0, "modified": 0}
+	# ------------------------------------------
+	
 	var total_dirt_removed : float = 0.0
 	var total_rock_removed : float = 0.0
 	var cells_modified : int = 0
 	
-	for y in range(min_y, max_y + 1):
-		for x in range(min_x, max_x + 1):
-			if x >= vertex_resolution or y >= vertex_resolution: continue
+	# Loop usa os limites seguros (loop_min/max)
+	for y in range(loop_min_y, loop_max_y + 1):
+		for x in range(loop_min_x, loop_max_x + 1):
 			
 			var current_h = get_height_safe(x, y)
-			
-			# Calcula diferença (Volume desta célula)
-			# Nota: Estamos tratando vértice como célula para simplificar volume
 			var diff = current_h - target_height
 			
-			# Se diff > 0, estamos cavando (removendo terra)
-			# Se diff < 0, estamos aterrando (precisa de terra) - Vamos focar em cavar agora
-			
-			if abs(diff) > 0.01: # Só altera se tiver mudança real
-				
-				# Verifica que material estamos tirando (baseado na profundidade original)
-				# Se já estamos fundo, é pedra. Se estamos na superfície, é terra.
+			if abs(diff) > 0.01:
 				var mat_id = get_material_id(min(x, resolution-1), min(y, resolution-1))
 				
 				if diff > 0: # Cavando
-					if mat_id == 2: # Pedra
+					if mat_id == 2:
 						total_rock_removed += diff
-					else: # Terra
+					else:
 						total_dirt_removed += diff
 				
-				# APLICA A NOVA ALTURA
 				set_height(x, y, target_height)
-				
-				# Atualiza o tipo de material (se cavou fundo demais, vira pedra)
 				_update_material_based_on_depth(x, y, target_height)
-				
 				cells_modified += 1
 	
-	# Avisa o Mesh para reconstruir TUDO de uma vez
 	if cells_modified > 0:
 		emit_signal("data_changed")
 	
-	# Retorna o relatório para o jogo (Inventário)
 	return {
 		"dirt": total_dirt_removed,
 		"rock": total_rock_removed,
 		"modified": cells_modified
 	}
-
-# No ActiveZoneData.gd
-
 
 func apply_ramp_area(start: Vector2i, end: Vector2i, start_height: float, end_height: float) -> Dictionary:
 	var min_x = min(start.x, end.x)
@@ -311,18 +305,24 @@ func apply_ramp_area(start: Vector2i, end: Vector2i, start_height: float, end_he
 	var min_y = min(start.y, end.y)
 	var max_y = max(start.y, end.y)
 	
-	# --- CORREÇÃO 1: Renomeei para 'grid_diff' (Diferença de Grade) ---
-	var grid_diff = end - start 
+	# --- SEGURANÇA (CLAMP) PARA MULTI-CHUNK ---
+	var loop_min_x = max(0, min_x)
+	var loop_max_x = min(vertex_resolution - 1, max_x)
+	var loop_min_y = max(0, min_y)
+	var loop_max_y = min(vertex_resolution - 1, max_y)
 	
-	# Vetores para calcular a inclinação (Slope)
+	if loop_min_x > loop_max_x or loop_min_y > loop_max_y:
+		return {"dirt": 0.0, "rock": 0.0, "modified": 0}
+	# ------------------------------------------
+	
+	# Cálculo de vetores usa os pontos ORIGINAIS (start/end) para a rampa ficar alinhada
+	var grid_diff = end - start 
 	var ramp_vector = Vector2.ZERO
 	
-	# Verifica qual eixo é o dominante (X ou Y)
-	# Usamos grid_diff aqui
 	if abs(grid_diff.x) > abs(grid_diff.y):
-		ramp_vector = Vector2(grid_diff.x, 0) # Trava no Eixo X (Horizontal)
+		ramp_vector = Vector2(grid_diff.x, 0)
 	else:
-		ramp_vector = Vector2(0, grid_diff.y) # Trava no Eixo Y (Vertical)
+		ramp_vector = Vector2(0, grid_diff.y)
 	
 	var ramp_length_sq = ramp_vector.length_squared()
 	
@@ -330,11 +330,12 @@ func apply_ramp_area(start: Vector2i, end: Vector2i, start_height: float, end_he
 	var total_rock = 0.0
 	var cells_modified = 0
 	
-	for y in range(min_y, max_y + 1):
-		for x in range(min_x, max_x + 1):
-			if x >= vertex_resolution or y >= vertex_resolution: continue
+	# Loop usa os limites seguros
+	for y in range(loop_min_y, loop_max_y + 1):
+		for x in range(loop_min_x, loop_max_x + 1):
 			
-			# --- A MATEMÁTICA DA RAMPA ---
+			# A matemática continua usando 'start' original para calcular a altura certa
+			# (Mesmo que 'start' esteja no vizinho, a projeção funciona)
 			var current_vector = Vector2(x - start.x, y - start.y)
 			
 			var t = 0.0
@@ -342,26 +343,20 @@ func apply_ramp_area(start: Vector2i, end: Vector2i, start_height: float, end_he
 				t = current_vector.dot(ramp_vector) / ramp_length_sq
 			
 			t = clamp(t, 0.0, 1.0)
-			
 			var target_h = lerp(start_height, end_height, t)
-			# -----------------------------
 			
 			var current_h = get_height_safe(x, y)
-			
-			# --- CORREÇÃO 2: Descomentei e renomeei para 'height_diff' ---
 			var height_diff = current_h - target_h
 			
-			# Agora comparamos float com float. Tudo certo.
 			if abs(height_diff) > 0.01:
 				var mat_id = get_material_id(min(x, resolution-1), min(y, resolution-1))
 				
-				if height_diff > 0: # Cavando
+				if height_diff > 0:
 					if mat_id == 2: 
 						total_rock += height_diff
 					else: 
 						total_dirt += height_diff
 				
-				# Aplica a altura calculada
 				set_height(x, y, target_h)
 				_update_material_based_on_depth(x, y, target_h)
 				cells_modified += 1
@@ -370,73 +365,3 @@ func apply_ramp_area(start: Vector2i, end: Vector2i, start_height: float, end_he
 		emit_signal("data_changed")
 		
 	return {"dirt": total_dirt, "rock": total_rock, "modified": cells_modified}
-
-#func apply_ramp_area(start: Vector2i, end: Vector2i, start_height: float, end_height: float) -> Dictionary:
-	#var min_x = min(start.x, end.x)
-	#var max_x = max(start.x, end.x)
-	#var min_y = min(start.y, end.y)
-	#var max_y = max(start.y, end.y)
-	#
-## --- CORREÇÃO: ALINHAMENTO DE EIXO (SNAP) ---
-	#var raw_vec = start - end # ou end - start, depende da sua ordem
-	## Vamos manter coerência com o código anterior:
-	#var diff = end - start
-	#
-	## Vetores para calcular a inclinação (Slope)
-	## Vetor "Direção da Rampa" (Do início ao fim do arraste)
-	#var ramp_vector = Vector2.ZERO
-	#
-	## Verifica qual eixo é o dominante (X ou Y)
-	#if abs(diff.x) > abs(diff.y):
-		#ramp_vector = Vector2(diff.x, 0) # Trava no Eixo X (Horizontal)
-	#else:
-		#ramp_vector = Vector2(0, diff.y) # Trava no Eixo Y (Vertical)
-	#
-	#
-	#
-	#var ramp_length_sq = ramp_vector.length_squared()
-	#
-	#var total_dirt = 0.0
-	#var total_rock = 0.0
-	#var cells_modified = 0
-	#
-	#for y in range(min_y, max_y + 1):
-		#for x in range(min_x, max_x + 1):
-			#if x >= vertex_resolution or y >= vertex_resolution: continue
-			#
-			## --- A MATEMÁTICA DA RAMPA ---
-			## 1. Vetor do ponto atual relativo ao início
-			#var current_vector = Vector2(x - start.x, y - start.y)
-			#
-			## 2. Projeção escalar: Onde este ponto cai na linha da rampa (0.0 a 1.0)
-			## Se t = 0 (Início), Se t = 1 (Fim), Se t = 0.5 (Meio)
-			#var t = 0.0
-			#if ramp_length_sq > 0:
-				#t = current_vector.dot(ramp_vector) / ramp_length_sq
-			#
-			## Clamp garante que não suba/desça além dos pontos se selecionar atrás
-			#t = clamp(t, 0.0, 1.0)
-			#
-			## 3. Calcula a altura alvo interpolada (Lerp)
-			#var target_h = lerp(start_height, end_height, t)
-			## -----------------------------
-			#
-			#var current_h = get_height_safe(x, y)
-			##var diff = current_h - target_h
-			#
-			#if abs(diff) > 0.01:
-				#var mat_id = get_material_id(min(x, resolution-1), min(y, resolution-1))
-				#
-				#if diff > 0: # Cavando
-					#if mat_id == 2: total_rock += diff
-					#else: total_dirt += diff
-				#
-				## Aplica a altura calculada
-				#set_height(x, y, target_h)
-				#_update_material_based_on_depth(x, y, target_h)
-				#cells_modified += 1
-				#
-	#if cells_modified > 0:
-		#emit_signal("data_changed")
-		#
-	#return {"dirt": total_dirt, "rock": total_rock, "modified": cells_modified}

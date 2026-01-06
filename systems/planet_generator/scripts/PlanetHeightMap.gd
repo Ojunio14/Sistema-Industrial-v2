@@ -2,46 +2,67 @@ extends Resource
 class_name PlanetHeightMap
 
 @export var panorama : Texture2D : set = set_panorama
-var _image : Image
+
+# Dados crus na memória (Acesso Thread-Safe natural)
+var _data : PackedFloat32Array
+var _width : int = 0
+var _height : int = 0
+var _is_ready : bool = false
 
 func set_panorama(val):
 	panorama = val
-	if panorama:
-		_image = panorama.get_image()
+	_is_ready = false # Se mudou a textura, os dados antigos são inválidos
 	emit_signal("changed")
 
+# Esta função DEVE ser chamada pela Main Thread antes de qualquer coisa
 func prepare_data():
-	if panorama: _image = panorama.get_image()
+	if not panorama: 
+		_is_ready = false
+		return
+		
+	# get_image() é pesado e perigoso em threads. Fazemos aqui.
+	var img = panorama.get_image()
+	if not img: 
+		_is_ready = false
+		return
+		
+	_width = img.get_width()
+	_height = img.get_height()
+	
+	# Redimensiona e copia
+	_data.resize(_width * _height)
+	
+	for y in range(_height):
+		for x in range(_width):
+			# Assumindo altura no canal R. Ajuste se precisar.
+			_data[y * _width + x] = img.get_pixel(x, y).r
+			
+	_is_ready = true
+	print("PlanetHeightMap: Dados gerados com sucesso (%dx%d)" % [_width, _height])
 
-# NOVA FUNÇÃO: Lê o valor suave entre os pixels
+# Leitura Segura (Sem locks, sem checks complexos)
 func get_height_at_uv_smooth(u: float, v: float) -> float:
-	if not _image: return 0.0
+	if not _is_ready: return 0.0 # Se não preparou, infelizmente é plano.
 	
-	var w = _image.get_width()
-	var h = _image.get_height()
+	# Proteção matemática para evitar erros de array
+	u = fposmod(u, 1.0)
+	v = clamp(v, 0.0, 1.0)
 	
-	# Coordenadas flutuantes exatas
-	var x = u * (w - 1)
-	var y = v * (h - 1)
+	var x = u * (_width - 1)
+	var y = v * (_height - 1)
 	
-	# Pega os 4 pixels vizinhos
 	var x_floor = int(x)
 	var y_floor = int(y)
-	var x_ceil = min(x_floor + 1, w - 1)
-	var y_ceil = min(y_floor + 1, h - 1)
+	var x_ceil = (x_floor + 1) % _width
+	var y_ceil = min(y_floor + 1, _height - 1)
 	
-	# Fração para misturar (quanto estou perto do próximo pixel?)
+	# Acesso direto ao Array (Super Rápido)
+	var tl = _data[y_floor * _width + x_floor]
+	var tr = _data[y_floor * _width + x_ceil]
+	var bl = _data[y_ceil * _width + x_floor]
+	var br = _data[y_ceil * _width + x_ceil]
+	
 	var x_lerp = x - x_floor
 	var y_lerp = y - y_floor
 	
-	# Lê os 4 cantos
-	var top_left = _image.get_pixel(x_floor, y_floor).r
-	var top_right = _image.get_pixel(x_ceil, y_floor).r
-	var bottom_left = _image.get_pixel(x_floor, y_ceil).r
-	var bottom_right = _image.get_pixel(x_ceil, y_ceil).r
-	
-	# Interpolação Bilinear (Suavização)
-	var top_mix = lerp(top_left, top_right, x_lerp)
-	var bottom_mix = lerp(bottom_left, bottom_right, x_lerp)
-	
-	return lerp(top_mix, bottom_mix, y_lerp)
+	return lerp(lerp(tl, tr, x_lerp), lerp(bl, br, x_lerp), y_lerp)

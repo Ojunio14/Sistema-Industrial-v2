@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://bds0p3y7ntc6n"]
+[gd_scene load_steps=6 format=3 uid="uid://bds0p3y7ntc6n"]
 
 [ext_resource type="Script" uid="uid://b55gi8hb7yc1c" path="res://scenes/cameras/scripts/camera_rts.gd" id="1_dp3uf"]
+[ext_resource type="Script" uid="uid://doks8hin1yw0b" path="res://systems/terrain_modifier/scripts/mining_tool.gd" id="2_hubxg"]
+[ext_resource type="PackedScene" uid="uid://bplmxroxixgtv" path="res://scenes/cameras/gameplay/miningGIZMO.tscn" id="3_7y5ca"]
+[ext_resource type="Script" uid="uid://doinib77clqtv" path="res://scenes/cameras/gameplay/cursor.gd" id="4_pdh10"]
+
+[sub_resource type="ImmediateMesh" id="ImmediateMesh_y76fx"]
 
 [node name="Camera_Rts" type="Node3D"]
 script = ExtResource("1_dp3uf")
@@ -9,3 +14,19 @@ script = ExtResource("1_dp3uf")
 
 [node name="Camera" type="Camera3D" parent="GimbalElevation"]
 cull_mask = 1047618
+
+[node name="MiningTool" type="Node" parent="." node_paths=PackedStringArray("player_camera", "gizmo", "cursor_visual")]
+script = ExtResource("2_hubxg")
+player_camera = NodePath("../GimbalElevation/Camera")
+gizmo = NodePath("MeshInstance")
+cursor_visual = NodePath("../cursor")
+
+[node name="MeshInstance" parent="MiningTool" instance=ExtResource("3_7y5ca")]
+layers = 2
+mesh = SubResource("ImmediateMesh_y76fx")
+skeleton = NodePath("../..")
+
+[node name="cursor" type="MeshInstance3D" parent="." node_paths=PackedStringArray("player_camera")]
+layers = 2
+script = ExtResource("4_pdh10")
+player_camera = NodePath("../GimbalElevation/Camera")

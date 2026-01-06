@@ -11,6 +11,7 @@ var planet_radius: float = 50.0
 var material_override_ref: Material
 
 func _ready() -> void:
+	add_to_group("active_zones")
 	set_layer_mask_value(1, false)
 	set_layer_mask_value(2, true)
 
