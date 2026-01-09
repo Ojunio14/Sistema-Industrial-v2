@@ -1,6 +1,13 @@
+<<<<<<< Updated upstream
 [gd_scene load_steps=3 format=3 uid="uid://ckhhkyswqw0bk"]
 
 [ext_resource type="PackedScene" uid="uid://bie5gppop55w8" path="res://systems/planet_generator/planet.tscn" id="2_hvc3j"]
+=======
+[gd_scene load_steps=5 format=3 uid="uid://ckhhkyswqw0bk"]
+
+[ext_resource type="Texture2D" uid="uid://cd6ayp7cqsux5" path="res://assets/textures/planets/teste conti_Mont.png" id="1_mkfqo"]
+[ext_resource type="PackedScene" uid="uid://d3wyo2rdm6vd1" path="res://systems/generator_planet/Planet.tscn" id="2_hvc3j"]
+>>>>>>> Stashed changes
 
 [sub_resource type="SphereMesh" id="SphereMesh_ocx6c"]
 radius = 400.0
@@ -12,5 +19,9 @@ height = 800.0
 visible = false
 layers = 2
 mesh = SubResource("SphereMesh_ocx6c")
+<<<<<<< Updated upstream
+=======
+surface_material_override/0 = SubResource("StandardMaterial3D_hvc3j")
+>>>>>>> Stashed changes
 
 [node name="Planet" parent="." instance=ExtResource("2_hvc3j")]

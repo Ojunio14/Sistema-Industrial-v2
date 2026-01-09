@@ -1,0 +1,76 @@
+[gd_scene load_steps=6 format=3 uid="uid://d3wyo2rdm6vd1"]
+
+[ext_resource type="Script" uid="uid://dsprxdfqyp4ck" path="res://systems/generator_planet/script/planet.gd" id="1_jcrl6"]
+[ext_resource type="Script" uid="uid://bllng81xo1mu7" path="res://systems/generator_planet/script/planet_mesh_face.gd" id="2_fs0j5"]
+[ext_resource type="Script" uid="uid://irlw3o6sw0u8" path="res://systems/generator_planet/script/planet_data.gd" id="2_omunb"]
+[ext_resource type="Material" uid="uid://xbu33tgw1i3u" path="res://systems/generator_planet/material/Planet_material.tres" id="3_88g5p"]
+
+[sub_resource type="Resource" id="Resource_88g5p"]
+script = ExtResource("2_omunb")
+radius = 400.0
+resolution = 202
+metadata/_custom_type_script = "uid://irlw3o6sw0u8"
+
+[node name="Planet" type="Node3D"]
+script = ExtResource("1_jcrl6")
+planeta_data = SubResource("Resource_88g5p")
+
+[node name="Up" type="MeshInstance3D" parent="."]
+layers = 2
+material_override = ExtResource("3_88g5p")
+script = ExtResource("2_fs0j5")
+normal = Vector3(0, 1, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Up"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Up/StaticBody3D"]
+
+[node name="Down" type="MeshInstance3D" parent="."]
+layers = 2
+material_override = ExtResource("3_88g5p")
+script = ExtResource("2_fs0j5")
+normal = Vector3(0, -1, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Down"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Down/StaticBody3D"]
+
+[node name="Left" type="MeshInstance3D" parent="."]
+layers = 2
+material_override = ExtResource("3_88g5p")
+script = ExtResource("2_fs0j5")
+normal = Vector3(-1, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Left"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Left/StaticBody3D"]
+
+[node name="Right" type="MeshInstance3D" parent="."]
+layers = 2
+material_override = ExtResource("3_88g5p")
+script = ExtResource("2_fs0j5")
+normal = Vector3(1, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Right"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Right/StaticBody3D"]
+
+[node name="Front" type="MeshInstance3D" parent="."]
+layers = 2
+material_override = ExtResource("3_88g5p")
+script = ExtResource("2_fs0j5")
+normal = Vector3(0, 0, 1)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Front"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Front/StaticBody3D"]
+
+[node name="Back" type="MeshInstance3D" parent="."]
+layers = 2
+material_override = ExtResource("3_88g5p")
+script = ExtResource("2_fs0j5")
+normal = Vector3(0, 0, -1)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Back"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Back/StaticBody3D"]

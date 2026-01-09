@@ -20,7 +20,7 @@ var pitch: float
 
 # Variável para armazenar o movimento do mouse entre as funções
 var _mouse_motion: Vector2 = Vector2.ZERO
-@export var my_id : String = "Orbital"
+@export var my_id : CameraManager.my_id
 
 @onready var camera_quadtree: Camera3D = $"../../../Local_Space/Group_Cameras_Local/Camera_Quadtree"
 @onready var camera_rts: Node3D = $"../../../Local_Space/Group_Cameras_Local/Camera_Rts"
@@ -34,7 +34,7 @@ var _mouse_motion: Vector2 = Vector2.ZERO
 # Unity: void Start()
 func _ready() -> void:
 	
-	CameraManager.register_camera(my_id, $Camera)
+	CameraManager.register_camera(my_id, $Camera,self)
 	
 	# Unity: yaw = transform.eulerAngles.y;
 	yaw = self.rotation_degrees.y
@@ -110,11 +110,31 @@ func _process(delta: float) -> void:
 	_mouse_motion = Vector2.ZERO
 
 
-
+var pos_1 : Vector3 = Vector3.ZERO
+var pos_2 : Vector3 = Vector3.ZERO
 const RAY_LENGTH = 1000
 
 func _physics_process(delta):
-	if Input.is_action_just_pressed("G"):
+	if Input.is_action_just_pressed("C"):
+
+		var result = RayCast()
+		if result.has("collider"):
+			if pos_1 != Vector3.ZERO and pos_2 != Vector3.ZERO:
+				$estrada_teste.create_road(pos_1,pos_2)
+				$bizie.ponto_A = pos_1
+				$bizie.ponto_B = pos_2
+				$bizie._criar_visualizador()
+				
+				print(pos_1,"----",pos_2)
+				return
+			
+			if pos_1 != Vector3.ZERO:
+				pos_2 = result["position"]
+			
+			else:
+				pos_1 = result["position"]
+			
+	if Input.is_action_just_pressed("G") :
 		#var meshIns : MeshInstance3D = MeshInstance3D.new()
 		#var boxMesh : BoxMesh = BoxMesh.new()
 		#boxMesh.size = Vector3(50,5,50)
@@ -127,9 +147,14 @@ func _physics_process(delta):
 		var result = RayCast()
 		if result.has("position"):
 			scaled_to_local(camera_quadtree)
+<<<<<<< Updated upstream
 			scaled_to_local(camera_rts)
 			CameraManager.switch_scaled_to_local()
 			process_mode = Node.PROCESS_MODE_DISABLED
+=======
+			CameraManager.switch_to_camera(CameraManager.my_id.Rts)
+			#process_mode = Node.PROCESS_MODE_DISABLED
+>>>>>>> Stashed changes
 			#var PosSphere = result["position"]
 			#var NormalSphere = result["normal"]
 			#if result["position"] != Vector3.ZERO:
@@ -178,6 +203,6 @@ func RayCast() -> Dictionary:
 	var result = space_state.intersect_ray(query)
 	return result
 
-func _exit_tree():
-	# Avisa o gerente que eu fui destruída (mudei de cena)
-	CameraManager.unregister_camera(my_id)
+#func _exit_tree():
+	## Avisa o gerente que eu fui destruída (mudei de cena)
+	#CameraManager.unregister_camera(my_id)

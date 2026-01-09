@@ -17,22 +17,45 @@ extends Node3D
 @export_group("Limites da Câmera")
 @export var min_pitch : float = -80.0 # Quase olhando de cima (Top-down)
 @export var max_pitch : float = -20.0 # Quase no horizonte (não deixe chegar a 0)
+<<<<<<< Updated upstream
 #@export var my_id : CameraManager.Cam_Id
 
 @export var my_id : String = "Rts"
 
+=======
+#@export var my_id : String = "Rts"
+@export var my_id : CameraManager.my_id
+>>>>>>> Stashed changes
 # Variáveis internas
 var target_zoom : float = 20.0
 var current_zoom : float = 20.0
 var camera_angle : float = -45.0 # Angulo padrão RTS
 
+
+
+
+
+
+# Variáveis internas
+var current_speed_scale : float = 1.0
+
+
+var grid_calc = GridCalculator.new()
+
+@onready var cursor_3d: MeshInstance3D = $"../../../Cursor3D"
+
 @onready var gimbal = $GimbalElevation
 @onready var camera: Camera3D = $GimbalElevation/Camera
 
 func _ready():
+<<<<<<< Updated upstream
 	CameraManager.register_camera(my_id, camera)
 	#CameraManager.register_camera(my_id,camera)
 	 #Configuração inicial dos nós filhos
+=======
+	CameraManager.register_camera(my_id,camera,self)
+	# Configuração inicial dos nós filhos
+>>>>>>> Stashed changes
 	if gimbal: gimbal.rotation_degrees.x = camera_angle
 	if camera: camera.position.z = current_zoom
 	
@@ -46,6 +69,119 @@ func _process(delta):
 	
 	# A mágica que mantém o RTS colado na esfera
 	align_to_planet()
+
+
+
+const RAY_LENGTH = 1000
+
+func _physics_process(delta):
+	var result = RayCast()
+# No seu script principal
+
+
+	if result.has("collider"):
+		var planet_mesh = result["collider"].get_parent() # ou o mesh face
+		
+		# 1. Pega os dados do Grid (Face, X, Y)
+		var grid_data = grid_calc.get_grid_position(planet_mesh.to_local(result.position))
+		
+		# 2. CALCULAR A POSIÇÃO REVERSA (Do Grid para o Mundo 3D)
+		# Precisamos perguntar pro planeta: "Onde fica o centro da célula X:50, Y:20?"
+		# Você precisará criar uma funçãozinha simples para isso ou usar a normal do raycast.
+		
+		# Truque rápido: Alinhar com a normal do Raycast
+		cursor_3d.global_position = result.position
+		
+		# Alinha a rotação do cursor para ficar "de pé" na esfera
+		var up = result.normal
+		var right = up.cross(Vector3.UP).normalized() # Cria um vetor lateral provisório
+		if up.is_equal_approx(Vector3.UP): right = Vector3.RIGHT # Evita erro nos polos
+		var fwd = right.cross(up).normalized()
+		
+		cursor_3d.look_at(cursor_3d.global_position - fwd, up)
+
+	
+	
+	#if result.has("collider"):
+		#var planet_mesh = result["collider"].get_parent()
+		#var PosSphere = result["position"]
+		#var NormalSphere = result["normal"]
+			#
+		## Usa nossa calculadora lógica
+		#var resultado = grid_calc.get_grid_position(PosSphere)
+		#print(resultado)
+			## resultado é algo como: { "face": 4, "x": 50, "y": 20 }
+		##print(PosSphere)
+		#
+		#var material = planet_mesh.material_override as ShaderMaterial
+		#
+		#if material:
+			## --- MUDANÇA AQUI ---
+			## NÃO divida por float(GridCalculator.GRID_SIZE).
+			## Envie o valor INTEIRO direto (Ex: Vector2(52, 41))
+			#var grid_pos = Vector2(resultado.x, resultado.y)
+#
+			#material.set_shader_parameter("cursor_grid_id", grid_pos)
+			#material.set_shader_parameter("cursor_face", resultado.face)
+			#material.set_shader_parameter("show_cursor", true)
+		#else:
+			#print("ERRO: Nenhum material no Geometry Override!")
+	#
+	#
+	
+	if Input.is_action_just_pressed("G"):
+		var meshIns : MeshInstance3D = MeshInstance3D.new()
+		var boxMesh : BoxMesh = BoxMesh.new()
+		boxMesh.size = Vector3(50,5,50)
+		#var capsuleMesh : CapsuleMesh = CapsuleMesh.new()
+		#capsuleMesh.radius = 3
+		#capsuleMesh.height = 16
+		meshIns.mesh = boxMesh#capsuleMesh
+		meshIns.set_layer_mask_value(1,false)
+		meshIns.set_layer_mask_value(2,true)
+		get_tree().get_first_node_in_group("teste_cons").add_child(meshIns)
+		
+		#var result = RayCast()
+		
+		#print(result)
+		if result.has("position"):
+			var planet_mesh = result["collider"].get_parent()
+			var PosSphere = result["position"]
+			var NormalSphere = result["normal"]
+			
+			#print($grid.get_grid_position(PosSphere))# Usa nossa calculadora lógica
+			var resultado = grid_calc.get_grid_position(PosSphere)
+			
+			# resultado é algo como: { "face": 4, "x": 50, "y": 20 }
+			
+			# Agora enviamos isso para o Shader pintar!
+			#var material = planet_mesh.get_active_material(0) as ShaderMaterial
+			#if material:
+				## Convertemos X/Y (inteiros 0-100) de volta para UV (0.0-1.0) para o shader
+				#var uv_normalizado = Vector2(resultado.x, resultado.y) / 100.0 # 100 é o tamanho do grid
+				#
+				#material.set_shader_parameter("cursor_uv", uv_normalizado)
+				#material.set_shader_parameter("cursor_face", resultado.face)
+					#
+			#
+			if result["position"] != Vector3.ZERO:
+				var rotFinal = Quaternion(Vector3.UP,NormalSphere)
+				meshIns.global_position = PosSphere
+				meshIns.quaternion = rotFinal
+
+func RayCast() -> Dictionary:
+	var space_state = get_world_3d().direct_space_state
+	var cam = get_viewport().get_camera_3d()
+	var mousepos = get_viewport().get_mouse_position()
+
+	var origin = cam.project_ray_origin(mousepos)
+	var end = origin + cam.project_ray_normal(mousepos) * RAY_LENGTH
+	var query = PhysicsRayQueryParameters3D.create(origin, end)
+	#query.collide_with_areas = true
+
+	var result = space_state.intersect_ray(query)
+	return result
+
 
 func _handle_input(delta):
 	# 1. Rotação da Câmera (Girar o tabuleiro com Q/E ou Botão do Meio)

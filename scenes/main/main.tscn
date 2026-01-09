@@ -1,7 +1,45 @@
-[gd_scene load_steps=2 format=3 uid="uid://b31puysgglw57"]
+[gd_scene load_steps=3 format=3 uid="uid://b31puysgglw57"]
 
 [ext_resource type="PackedScene" uid="uid://cqkyy6vpyqs7l" path="res://scenes/universe/galaxy_map/galaxy_map.tscn" id="1_hyk8p"]
+[ext_resource type="Script" uid="uid://b32rmihfa3kcr" path="res://scenes/cameras/scripts/ui/h_box_troca_de_cameras.gd" id="2_iuonh"]
 
 [node name="Main" type="Node"]
 
 [node name="GalaxyMap" parent="." instance=ExtResource("1_hyk8p")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Debug" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 300.0
+offset_bottom = 300.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Debug"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBox_Troca_de_Cameras" type="HBoxContainer" parent="CanvasLayer/Debug/VBoxContainer"]
+layout_mode = 2
+script = ExtResource("2_iuonh")
+
+[node name="Label" type="Label" parent="CanvasLayer/Debug/VBoxContainer/HBox_Troca_de_Cameras"]
+layout_mode = 2
+text = "Cameras  "
+
+[node name="OptionButton" type="OptionButton" parent="CanvasLayer/Debug/VBoxContainer/HBox_Troca_de_Cameras"]
+layout_mode = 2
+focus_mode = 0
+item_count = 3
+popup/item_0/text = "Orbital"
+popup/item_0/id = 0
+popup/item_1/text = "Camera Quadtree"
+popup/item_1/id = 1
+popup/item_2/text = "Rts"
+popup/item_2/id = 2
+
+[connection signal="item_selected" from="CanvasLayer/Debug/VBoxContainer/HBox_Troca_de_Cameras/OptionButton" to="CanvasLayer/Debug/VBoxContainer/HBox_Troca_de_Cameras" method="_on_option_button_item_selected"]

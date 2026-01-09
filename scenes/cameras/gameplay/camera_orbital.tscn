@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://ck22ovow7cbe6"]
+[gd_scene load_steps=5 format=3 uid="uid://ck22ovow7cbe6"]
 
 [ext_resource type="Script" uid="uid://qoq8eucb14w3" path="res://scenes/cameras/scripts/camera_orbital.gd" id="1_6hot4"]
+[ext_resource type="Script" uid="uid://c15o5w7cpljtr" path="res://teste/estrada_teste.gd" id="2_vsqsv"]
+[ext_resource type="Script" uid="uid://ddtpv11vayoqr" path="res://teste/bizie.gd" id="3_xcjce"]
+
+[sub_resource type="Curve3D" id="Curve3D_xcjce"]
 
 [node name="Camera_Orbital" type="Node3D"]
 script = ExtResource("1_6hot4")
@@ -8,4 +12,14 @@ radius = 5000
 raio_seguranca = 20
 
 [node name="Camera" type="Camera3D" parent="."]
+<<<<<<< Updated upstream
 cull_mask = 1048573
+=======
+
+[node name="estrada_teste" type="Node3D" parent="."]
+script = ExtResource("2_vsqsv")
+
+[node name="bizie" type="Path3D" parent="."]
+curve = SubResource("Curve3D_xcjce")
+script = ExtResource("3_xcjce")
+>>>>>>> Stashed changes
